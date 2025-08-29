@@ -15,8 +15,6 @@ import com.personal.ecommerce.entity.VerificationToken;
 import com.personal.ecommerce.repository.UserRepository;
 import com.personal.ecommerce.repository.VerificationTokenRepository;
 
-import jakarta.transaction.Transactional;
-
 @Service
 public class UserService implements UserDetailsService {
 

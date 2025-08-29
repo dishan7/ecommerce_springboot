@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PostMapping("/verifyRegistrationToken")
-    public String verifyRegistrationToken(@RequestParam String token){
+    public String verifyRegistrationToken(@RequestParam(name = "token") String token){
         boolean isVerificationTokenValid = _userService.verifyRegistrationToken(token);
         if(!isVerificationTokenValid){
             return "Verification token is not valid. Please try again";

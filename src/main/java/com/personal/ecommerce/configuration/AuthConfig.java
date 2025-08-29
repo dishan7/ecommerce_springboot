@@ -20,8 +20,8 @@ public class AuthConfig {
         try{
             httpSecurity.csrf(csrf -> csrf.disable())
                         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                            .requestMatchers("/register", "/verifyRegistrationToken", 
-                            "/test")
+                            .requestMatchers("/register", "/test", "/error", 
+                            "/verifyRegistrationToken")
                             .permitAll()
                             .anyRequest()
                             .authenticated())
