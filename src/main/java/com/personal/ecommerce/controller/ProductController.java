@@ -1,0 +1,62 @@
+package com.personal.ecommerce.controller;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.personal.ecommerce.entity.Product;
+import com.personal.ecommerce.entity.User;
+import com.personal.ecommerce.service.ProductService;
+import com.personal.ecommerce.service.UserService;
+
+@RestController
+public class ProductController {
+
+    @Autowired
+    private UserService _userService;
+
+    @Autowired
+    private ProductService _productService;
+
+    @GetMapping("/products")
+    public List<Product> fetchProducts(@RequestParam(name = "categoryId", required = false) Long categoryId){
+        if(categoryId != null){
+            return _productService.fetchProductsByCategoryId(categoryId);
+        }
+        return _productService.fetchAllProducts();
+    }
+
+    // @PostMapping("/addProductToCart")
+    // @PreAuthorize("hasRole('USER')")
+    // public String addProductToCart(@RequestParam(name = "productId") Long productId, 
+    // @RequestParam(name = "cartId") Long cartId){
+    //     return _productService.addProductToCart(productId, cartId);
+    // }
+
+    @PostMapping("/addProductToCart")
+    @PreAuthorize("hasRole('USER')")
+    public String addProductToCart(@RequestParam(name = "productId") Long productId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = _userService.fetchUserByEmail(email);
+        System.out.println("user email: " + email);
+        return _productService.addProductToCart(productId, user);
+    }
+
+    // @GetMapping("/getUserDetails")
+    // @PreAuthorize("hasRole('USER')")
+    // public User getUserDetails(){
+    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    //     String email = authentication.getName();
+    //     User user = _productService.fetchUserByEmail(email);
+    //     System.out.println(email);
+    //     return user;
+    // }
+}

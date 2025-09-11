@@ -1,18 +1,24 @@
 package com.personal.ecommerce.dto;
 
+import jakarta.validation.constraints.Email;
+
 public class UserDto {
     
+    @Email
     private String email;
 
     private String password;
+
+    private String role;
 
     public UserDto(){
         
     }
 
-    public UserDto(String email, String password) {
+    public UserDto(String email, String password, String role) {
         this.email = email;
         this.password = password;
+        this.role = role;
     }
 
     public String getEmail() {
@@ -31,5 +37,12 @@ public class UserDto {
         this.password = password;
     }
 
-    
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 }
