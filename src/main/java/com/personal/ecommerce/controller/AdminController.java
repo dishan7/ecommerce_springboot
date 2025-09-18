@@ -41,6 +41,7 @@ public class AdminController {
     }
 
     @PostMapping("/assignAndCreateProductsToCategory")
+    @PreAuthorize("hasRole('ADMIN')")
     public String assignAndCreateProductsToCategory(@RequestParam(name = "categoryId") Long categoryId, @RequestBody List<Product> products){
         return _productService.assignAndCreateProductsToCategory(categoryId, products);
     }

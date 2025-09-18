@@ -41,8 +41,9 @@ public class AuthJwtAuthenticationFilter extends OncePerRequestFilter{
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getServletPath();
-        return path.equals("/login") || path.equals("/register") || path.equals("/test") || path.equals("/error") || path.equals("/verifyRegistrationToken") || path.equals("/signin") || path.equals("/addCategory") || 
-        path.equals("/addProduct") || path.equals("/assignProductToCategory")
-        || path.equals("/products") || path.equals("/assignAndCreateProductsToCategory") || path.equals("/addProductToCart") || path.equals("/fetchUserDetails");
+        return path.equals("/login") || path.equals("/register") || path.equals("/test") ||
+                path.equals("/error") || path.equals("/verifyRegistrationToken") ||
+                path.equals("/signin") || path.equals("/products") || path.equals("/categories") ||
+                path.equals("/api/v1/products");
     }
 }

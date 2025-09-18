@@ -2,18 +2,14 @@ package com.personal.ecommerce.service;
 
 import java.util.List;
 
+import com.personal.ecommerce.entity.*;
+import com.personal.ecommerce.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.method.P;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-
-import com.personal.ecommerce.entity.Cart;
-import com.personal.ecommerce.entity.Category;
-import com.personal.ecommerce.entity.Product;
-import com.personal.ecommerce.entity.User;
-import com.personal.ecommerce.repository.CartRepository;
-import com.personal.ecommerce.repository.CategoryRepository;
-import com.personal.ecommerce.repository.ProductRepository;
-import com.personal.ecommerce.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -31,6 +27,9 @@ public class ProductService {
 
     @Autowired
     private CartRepository _cartRepository;
+
+    @Autowired
+    private ProductInCartRepository _productInCartRepository;
     
     public List<Product> fetchAllProducts(){
         return _productRepository.findAll();
@@ -91,15 +90,59 @@ public class ProductService {
     //     return "Product added to cart successfully";
     // }
 
-    public String addProductToCart(Long productId, User user){
+    @Transactional
+    public String addProductToCart(Long productId, User user, Integer quantity){
         Product product = _productRepository.findById(productId).get();
         if(product == null){
             return "Product not found";
         }
+
         Cart cart = user.getCart();
-        cart.getProducts().add(product);
+        ProductInCart productInCart = new ProductInCart();
+        productInCart.setProduct(product);
+        productInCart.setQuantity(quantity);
+        productInCart.setCart(cart);
+        _productInCartRepository.save(productInCart);
+        cart.getProducts().add(productInCart);
         _cartRepository.save(cart);
         return "Product added to cart successfully";
+    }
+
+    @Transactional
+    public String removeProductFromCart(Long productInCartId, User user){
+        ProductInCart productInCart = _productInCartRepository.findById(productInCartId).get();
+        if(productInCart == null){
+            return "Product not found in cart";
+        }
+        Cart cart = user.getCart();
+        cart.getProducts().remove(productInCart);
+        _productInCartRepository.delete(productInCart);
+        _cartRepository.save(cart);
+        return "Product removed from the cart successfully";
+    }
+
+    public PagedResponse<Product> getPaginatedProducts(int pageSize, String sortBy, int pageNumber, String sortDir, Long categoryId){
+        Pageable pageable;
+        if(sortDir.equals("asc")){
+            pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).ascending());
+        }
+        else{
+            pageable = PageRequest.of(pageNumber, pageSize, Sort.by(sortBy).descending());
+        }
+
+        Page<Product> pagedProduct = _productRepository.findByCategoryCategoryId(categoryId, pageable);
+
+        return new PagedResponse<>(
+                pagedProduct.getContent(),
+                pagedProduct.getNumber(),
+                pagedProduct.getSize(),
+                pagedProduct.getTotalElements(),
+                pagedProduct.getTotalPages(),
+                pagedProduct.isFirst(),
+                pagedProduct.isLast(),
+                pagedProduct.hasNext(),
+                pagedProduct.hasPrevious()
+        );
     }
 
 }

@@ -21,7 +21,7 @@ public class AuthConfig {
             httpSecurity.csrf(csrf -> csrf.disable())
                         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                             .requestMatchers("/register", "/test", "/error", 
-                            "/verifyRegistrationToken", "signin", "/loginTest", "/addCategory", "/addProduct", "/assignProductToCategory", "/products", "/assignAndCreateProductsToCategory", "/addProductToCart", "/fetchUserDetails")
+                            "/verifyRegistrationToken", "signin", "/loginTest", "/addCategory", "/addProduct", "/assignProductToCategory", "/products", "/assignAndCreateProductsToCategory", "/addProductToCart", "/fetchUserDetails", "/removeProductFromCart", "/categories", "/api/v1/products")
                             .permitAll()
                             .anyRequest()
                             .authenticated())

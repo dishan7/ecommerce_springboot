@@ -42,21 +42,23 @@ public class ProductController {
 
     @PostMapping("/addProductToCart")
     @PreAuthorize("hasRole('USER')")
-    public String addProductToCart(@RequestParam(name = "productId") Long productId){
+    public String addProductToCart(@RequestParam(name = "productId") Long productId,
+                                   @RequestParam(name = "quantity") Integer quantity){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String email = authentication.getName();
         User user = _userService.fetchUserByEmail(email);
-        System.out.println("user email: " + email);
-        return _productService.addProductToCart(productId, user);
+        if(quantity == null){
+            quantity = 1;
+        }
+        return _productService.addProductToCart(productId, user, quantity);
     }
 
-    // @GetMapping("/getUserDetails")
-    // @PreAuthorize("hasRole('USER')")
-    // public User getUserDetails(){
-    //     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    //     String email = authentication.getName();
-    //     User user = _productService.fetchUserByEmail(email);
-    //     System.out.println(email);
-    //     return user;
-    // }
+    @PostMapping("/removeProductFromCart")
+    @PreAuthorize("hasRole('USER')")
+    public String removeProductFromCart(@RequestParam(name = "productInCartId") Long productInCartId){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User user = _userService.fetchUserByEmail(email);
+        return _productService.removeProductFromCart(productInCartId, user);
+    }
 }

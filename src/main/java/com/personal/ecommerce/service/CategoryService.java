@@ -2,6 +2,7 @@ package com.personal.ecommerce.service;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,10 @@ public class CategoryService {
 
     @Autowired
     private CategoryRepository _categoryRepository;
+
+    public List<Category> fetchCategories(){
+        return _categoryRepository.findAll();
+    }
 
     public String addCategory(String categoryName){
         Category category = _categoryRepository.findByCategoryName(categoryName);

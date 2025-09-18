@@ -16,10 +16,10 @@ public class TokenUtil {
             .setIssuedAt(new Date(System.currentTimeMillis()))
             .setExpiration(new Date(System.currentTimeMillis() + 8 * 60 * 60 * 1000)) // 1 day expiration
             .claim("roles", "ROLE_" + role)
-            .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256, "secretKeyPersonalTestingTokensecretKeyPersonalTestingTokensecretKeyPersonalTestingTokensecretKeyPersonalTestingToken") // Use a secure key in production
+            .signWith(io.jsonwebtoken.SignatureAlgorithm.HS256,"secretKeyPersonalTestingTokensecretKeyPersonalTestingTokensecretKeyPersonalTestingTokensecretKeyPersonalTestingToken") // Use a secure key in production
             .compact();
     }
-    
+
     public static Claims validateSignedToken(String authorizationHeader){
         try{
             Claims body =  Jwts.parser()

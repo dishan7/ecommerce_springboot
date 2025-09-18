@@ -4,12 +4,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 
 @Entity
 public class Product {
@@ -28,19 +23,15 @@ public class Product {
     @JsonIgnore
     private Category category;
 
-    @ManyToMany
-    private List<Cart> cartList;
-
     public Product() {
     }
 
-    public Product(Long productId, String productName, String productDescription, Double productPrice, Category category, List<Cart> cartList) {
+    public Product(Long productId, String productName, String productDescription, Double productPrice, Category category) {
         this.productId = productId;
         this.productName = productName;
         this.productDescription = productDescription;
         this.productPrice = productPrice;
         this.category = category;
-        this.cartList = cartList;
     }
 
     public Long getProductId() {
@@ -83,14 +74,5 @@ public class Product {
         this.category = category;
     }
 
-    public List<Cart> getCartList() {
-        return cartList;
-    }
-
-    public void setCartList(List<Cart> cartList) {
-        this.cartList = cartList;
-    }
-
-    
 
 }
