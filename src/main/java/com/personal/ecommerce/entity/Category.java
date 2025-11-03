@@ -8,8 +8,16 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Category {
 
     @Id
@@ -20,38 +28,4 @@ public class Category {
 
     @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Product> productList;
-
-    public Category() {
-    }
-
-    public Category(Long categoryId, String categoryName, List<Product> productList) {
-        this.categoryId = categoryId;
-        this.categoryName = categoryName;
-        this.productList = productList;
-    }
-
-    public Long getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(Long categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getCategoryName() {
-        return categoryName;
-    }
-
-    public void setCategoryName(String categoryName) {
-        this.categoryName = categoryName;
-    }
-
-    public List<Product> getProductList() {
-        return productList;
-    }
-
-    public void setProductList(List<Product> productList) {
-        this.productList = productList;
-    }
-
 }

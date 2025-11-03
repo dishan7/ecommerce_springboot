@@ -44,6 +44,7 @@ public class AuthJwtAuthenticationFilter extends OncePerRequestFilter{
         return path.equals("/login") || path.equals("/register") || path.equals("/test") ||
                 path.equals("/error") || path.equals("/verifyRegistrationToken") ||
                 path.equals("/signin") || path.equals("/products") || path.equals("/categories") ||
-                path.equals("/api/v1/products");
+                path.equals("/api/v1/products") || path.equals("/products/fluxStream") || path.equals("/productsAsync")
+                || path.equals("/product");
     }
 }

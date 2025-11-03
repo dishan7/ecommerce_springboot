@@ -1,83 +1,42 @@
 package com.personal.ecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.personal.ecommerce.enums.ROLES;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.util.List;
 
 @Entity
+@Table(name = "user")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false, unique = true)
+    @Email
     private String email;
 
     private String password;
 
-    private String role;
+    private ROLES role;
 
     private boolean isEnabled;
 
     @OneToOne
     private Cart cart;
 
-    public User() {
-    }
-
-    public User(Long id, String email, String password, String role, boolean isEnabled, Cart cart) {
-        this.id = id;
-        this.email = email;
-        this.password = password;
-        this.role = role;
-        this.isEnabled = isEnabled;
-        this.cart = cart;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean isEnabled) {
-        this.isEnabled = isEnabled;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @JsonIgnore
+    private List<Order> orders;
 }

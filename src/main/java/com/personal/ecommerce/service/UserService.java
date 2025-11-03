@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import com.personal.ecommerce.enums.ROLES;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -39,6 +41,9 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public User registerUser(UserDto userDto){
+        if(_userRepository.findByEmail(userDto.getEmail()) != null){
+            throw new RuntimeException("Email already exists");
+        }
         User registerUser = new User();
         registerUser.setEmail(userDto.getEmail());
         registerUser.setPassword(_passwordEncoder.encode(userDto.getPassword()));
@@ -58,10 +63,11 @@ public class UserService implements UserDetailsService {
         if(fetchedUser == null){
             throw new UsernameNotFoundException(username + " not found");
         }
+
         return org.springframework.security.core.userdetails.User
             .withUsername(fetchedUser.getEmail())
             .password(fetchedUser.getPassword())
-            .roles(fetchedUser.getRole())
+            .roles(fetchedUser.getRole().name())
             .disabled(false)
             .build();
     }
@@ -82,6 +88,7 @@ public class UserService implements UserDetailsService {
         return true;
     }
 
+    @Transactional
     public void enableUser(String token){
         VerificationToken storedToken = _verificationTokenRepository.findByToken(token);
         User fetchedUser = storedToken.getUser();
@@ -99,10 +106,11 @@ public class UserService implements UserDetailsService {
             return "User with email " + email + " is not enabled. Please verify your email.";
         }
         boolean isPasswordMatch = _passwordEncoder.matches(password, fetchedUser.getPassword());
-        if(!isPasswordMatch){
+        if(!isPasswordMatch) {
             return "Invalid credentials. Please try again.";
         }
-        return TokenUtil.generateToken(fetchedUser, fetchedUser.getRole());
+
+        return TokenUtil.generateToken(fetchedUser, fetchedUser.getRole().name());
     }
 
     public User fetchUserByEmail(String email){

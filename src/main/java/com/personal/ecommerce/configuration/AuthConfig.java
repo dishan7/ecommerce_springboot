@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 public class AuthConfig {
@@ -16,12 +17,17 @@ public class AuthConfig {
     }
 
     @Bean
+    public WebClient webClient(WebClient.Builder builder){
+        return builder.baseUrl("http://localhost:9070").build();
+    }
+
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity){
         try{
             httpSecurity.csrf(csrf -> csrf.disable())
                         .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                             .requestMatchers("/register", "/test", "/error", 
-                            "/verifyRegistrationToken", "signin", "/loginTest", "/addCategory", "/addProduct", "/assignProductToCategory", "/products", "/assignAndCreateProductsToCategory", "/addProductToCart", "/fetchUserDetails", "/removeProductFromCart", "/categories", "/api/v1/products")
+                            "/verifyRegistrationToken", "signin", "/loginTest", "/addCategory", "/addProduct", "/assignProductToCategory", "/products", "/assignAndCreateProductsToCategory", "/addProductToCart", "/fetchUserDetails", "/removeProductFromCart", "/categories", "/api/v1/products", "/productsAsync", "/products/fluxStream", "/product", "/placeOrder", "/orders", "/addInventoryToProduct")
                             .permitAll()
                             .anyRequest()
                             .authenticated())

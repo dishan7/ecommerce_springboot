@@ -4,6 +4,7 @@ import java.util.Date;
 
 import com.personal.ecommerce.entity.User;
 
+import com.personal.ecommerce.enums.ROLES;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;

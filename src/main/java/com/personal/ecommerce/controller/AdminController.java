@@ -3,11 +3,9 @@ package com.personal.ecommerce.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.personal.ecommerce.entity.Product;
 import com.personal.ecommerce.service.CategoryService;
@@ -46,5 +44,11 @@ public class AdminController {
         return _productService.assignAndCreateProductsToCategory(categoryId, products);
     }
 
+    @PutMapping("/addInventoryToProduct")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity addInventoryToProduct(@RequestParam(name = "productId") Long productId, @RequestParam(name = "inventory") Integer inventory) throws Exception {
+        Product product =  _productService.addInventoryToProduct(productId, inventory);
+        return ResponseEntity.status(200).body(product);
+    }
 
 }

@@ -1,5 +1,6 @@
 package com.personal.ecommerce.service;
 
+import java.time.Duration;
 import java.util.List;
 
 import com.personal.ecommerce.entity.*;
@@ -12,6 +13,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 @Service
 public class ProductService {
@@ -30,12 +35,16 @@ public class ProductService {
 
     @Autowired
     private ProductInCartRepository _productInCartRepository;
+
+    @Autowired
+    private WebClient webClient;
     
     public List<Product> fetchAllProducts(){
         return _productRepository.findAll();
     }
 
     public Product addProduct(Product product){
+        if(product.getInventoryCount() == null) product.setInventoryCount(0);
         return _productRepository.save(product);
     }
 
@@ -64,12 +73,22 @@ public class ProductService {
         }
         for(Product product : products){
             product.setCategory(category);
+            if(product.getInventoryCount() == null) product.setInventoryCount(0);
         }
         category.getProductList().addAll(products);
         _categoryRepository.save(category);
         //don't need to save category again as cascade is set
         //_productRepository.saveAll(products);
         return "Products assigned to category successfully";
+    }
+
+    public Product addInventoryToProduct(Long productId, Integer inventory) throws Exception {
+        Product product = _productRepository.findById(productId).orElse(null);
+        if(product == null){
+            throw new Exception("product not found");
+        }
+        product.setInventoryCount(product.getInventoryCount() + inventory);
+        return _productRepository.save(product);
     }
 
     public List<Product> fetchProductsByCategoryId(Long categoryId){
@@ -92,7 +111,7 @@ public class ProductService {
 
     @Transactional
     public String addProductToCart(Long productId, User user, Integer quantity){
-        Product product = _productRepository.findById(productId).get();
+        Product product = _productRepository.findById(productId).orElse(null);
         if(product == null){
             return "Product not found";
         }
@@ -110,7 +129,7 @@ public class ProductService {
 
     @Transactional
     public String removeProductFromCart(Long productInCartId, User user){
-        ProductInCart productInCart = _productInCartRepository.findById(productInCartId).get();
+        ProductInCart productInCart = _productInCartRepository.findById(productInCartId).orElse(null);
         if(productInCart == null){
             return "Product not found in cart";
         }
@@ -119,6 +138,10 @@ public class ProductService {
         _productInCartRepository.delete(productInCart);
         _cartRepository.save(cart);
         return "Product removed from the cart successfully";
+    }
+
+    public Product getProductById(Long productId){
+        return _productRepository.findById(productId).orElse(null);
     }
 
     public PagedResponse<Product> getPaginatedProducts(int pageSize, String sortBy, int pageNumber, String sortDir, Long categoryId){
@@ -145,4 +168,36 @@ public class ProductService {
         );
     }
 
+    public Mono<Product> getProductsAsync(){
+        Mono<Product> apiResultMono = webClient.get()
+                .uri("http://localhost:9070/products")
+                .retrieve()
+                .bodyToMono(Product.class)
+                .doOnSuccess(apiResult -> {
+                    System.out.println("Result thrown by thread: " + Thread.currentThread().getName());
+                });
+
+        return apiResultMono;
+    }
+
+    public Flux<Product> getProductsFluxStream(Long categoryId){
+        return Flux.interval(Duration.ofSeconds(3))
+                .take(20)
+                .flatMap(i -> {
+                    System.out.println("Generation product data for item " + i + " on thread " + Thread.currentThread().getName());
+                    return webClient.get()
+                            .uri(uriBuilder -> uriBuilder.path("/products")
+                                    .queryParam("categoryId", categoryId)
+                                    .build())
+                            .retrieve()
+                            .bodyToFlux(Product.class)
+                            .doOnNext(productResult -> {
+                                System.out.println("Product data fetched for item: " + i + "on thread: " + Thread.currentThread().getName());
+                            });
+                }).doOnComplete(() -> {
+                    System.out.println("stream generation completed on thread:" + Thread.currentThread().getName());
+                }).doOnError((error) -> {
+                    System.out.println("stream generation completed on thread:" + Thread.currentThread().getName());
+                });
+    }
 }

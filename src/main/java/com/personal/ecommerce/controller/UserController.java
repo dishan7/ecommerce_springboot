@@ -2,15 +2,13 @@ package com.personal.ecommerce.controller;
 
 import java.util.UUID;
 
+import com.personal.ecommerce.exceptions.UserNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.personal.ecommerce.dto.UserDto;
 import com.personal.ecommerce.entity.User;
@@ -89,4 +87,10 @@ public class UserController {
         }
         return "User details fetched successfully";
     }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity handleUserNotFoundException(Exception e){
+        return ResponseEntity.status(404).body(e.getMessage());
+    }
+
 }

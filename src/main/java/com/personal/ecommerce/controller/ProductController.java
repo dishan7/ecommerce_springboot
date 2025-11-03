@@ -3,6 +3,7 @@ package com.personal.ecommerce.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,6 +16,8 @@ import com.personal.ecommerce.entity.Product;
 import com.personal.ecommerce.entity.User;
 import com.personal.ecommerce.service.ProductService;
 import com.personal.ecommerce.service.UserService;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @RestController
 public class ProductController {
@@ -60,5 +63,20 @@ public class ProductController {
         String email = authentication.getName();
         User user = _userService.fetchUserByEmail(email);
         return _productService.removeProductFromCart(productInCartId, user);
+    }
+
+    @GetMapping("/productsAsync")
+    public Mono<Product> getProductsAsync(){
+        return _productService.getProductsAsync();
+    }
+
+    @GetMapping(value = "/products/fluxStream", produces = MediaType.APPLICATION_NDJSON_VALUE)
+    public Flux<Product> getProductsFluxStream(@RequestParam(name = "categoryId") Long categoryId){
+        return _productService.getProductsFluxStream(categoryId);
+    }
+
+    @GetMapping("/product")
+    public Product getProductById(@RequestParam(name = "productId") Long productId){
+        return _productService.getProductById(productId);
     }
 }

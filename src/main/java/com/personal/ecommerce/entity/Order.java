@@ -1,30 +1,36 @@
 package com.personal.ecommerce.entity;
 
-import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import com.personal.ecommerce.enums.ORDER_STATUS;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Entity
+@Table(name = "orders")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class Cart {
-    
+public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long cartId;
+    private Long orderId;
 
-    @OneToOne
-    @JsonIgnore
+    @ManyToOne
     private User user;
 
     @OneToMany
     private List<ProductInCart> products;
+
+    private LocalDateTime timestamp;
+
+    private Double orderValue;
+
+    private ORDER_STATUS orderStatus;
 }
